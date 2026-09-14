@@ -99,22 +99,22 @@ export const Route = createRootRouteWithContext<{
       },
       {
         title:
-          "Método IA para Concursos | Estude com Inteligência Artificial por R$27",
+          "Combo Estratégia da Aprovação — 4 em 1 | Prof. Lucas MPC",
       },
       {
         name: "description",
         content:
-          "Aprenda a usar IA para estudar para concursos com mais eficiência. Gere mapas mentais, flashcards, áudios, vídeos e relatórios em minutos. Acesso por R$27.",
+          "Quatro cursos para organizar os estudos, usar inteligência artificial, evitar erros e tomar decisões melhores na prova. De R$188 por R$27.",
       },
       {
         property: "og:title",
         content:
-          "Método IA para Concursos | Estude com Inteligência Artificial por R$27",
+          "Combo Estratégia da Aprovação — 4 em 1 | Prof. Lucas MPC",
       },
       {
         property: "og:description",
         content:
-          "Aprenda a usar IA para estudar para concursos com mais eficiência. Gere mapas mentais, flashcards, áudios, vídeos e relatórios em minutos. Acesso por R$27.",
+          "Quatro cursos para organizar os estudos, usar inteligência artificial, evitar erros e tomar decisões melhores na prova. De R$188 por R$27.",
       },
       {
         property: "og:type",
@@ -122,7 +122,7 @@ export const Route = createRootRouteWithContext<{
       },
       {
         property: "og:site_name",
-        content: "Método IA para Concursos",
+        content: "Combo Estratégia da Aprovação",
       },
       {
         name: "twitter:card",
@@ -131,37 +131,22 @@ export const Route = createRootRouteWithContext<{
       {
         name: "twitter:title",
         content:
-          "Método IA para Concursos | Estude com Inteligência Artificial por R$27",
+          "Combo Estratégia da Aprovação — 4 em 1 | Prof. Lucas MPC",
       },
       {
         name: "twitter:description",
         content:
-          "Aprenda a usar IA para estudar para concursos com mais eficiência. Gere mapas mentais, flashcards, áudios, vídeos e relatórios em minutos. Acesso por R$27.",
+          "Quatro cursos para organizar os estudos, usar inteligência artificial, evitar erros e tomar decisões melhores na prova. De R$188 por R$27.",
       },
       {
         name: "theme-color",
         content: "#0b1220",
-      },
-      {
-        property: "og:image",
-        content:
-          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/7b417be9-049d-4d60-96a6-76e987850d38/id-preview-2771a906--cb8e0f35-4d70-4aca-a6ba-d90be052d719.lovable.app-1784256566454.png",
-      },
-      {
-        name: "twitter:image",
-        content:
-          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/7b417be9-049d-4d60-96a6-76e987850d38/id-preview-2771a906--cb8e0f35-4d70-4aca-a6ba-d90be052d719.lovable.app-1784256566454.png",
       },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
-      },
-      {
-        rel: "icon",
-        href: "/favicon.ico",
-        type: "image/x-icon",
       },
       {
         rel: "preconnect",
