@@ -14,6 +14,7 @@ import {
   Monitor,
   Play,
   Plus,
+  Quote,
   Route as RouteIcon,
   ShieldCheck,
   Smartphone,
@@ -64,9 +65,7 @@ function useProfessorPhoto() {
 
     async function loadPhoto() {
       try {
-        const response = await fetch(PROFESSOR_PHOTO_SOURCE_URL, {
-          cache: "force-cache",
-        });
+        const response = await fetch(PROFESSOR_PHOTO_SOURCE_URL, { cache: "force-cache" });
         if (!response.ok) return;
         const html = await response.text();
         const match = html.match(
@@ -141,6 +140,7 @@ const courses = [
     stage: "Planejar",
     icon: RouteIcon,
     title: "Como Passar em Concursos",
+    demoVideoId: "IdlCW2Ltw5Q",
     promise: "Construa uma preparação com direção, organização e constância.",
     lessons: ["O caminho da aprovação", "Planejamento estratégico", "Métodos de estudo", "Revisão e constância"],
     items: [
@@ -155,6 +155,7 @@ const courses = [
     stage: "Potencializar com IA",
     icon: Brain,
     title: "Método IA para Concursos",
+    demoVideoId: "SWhp5h8rDCM",
     promise: "Use a inteligência artificial como ferramenta prática de estudo.",
     lessons: ["Primeiros passos com IA", "Prompts para estudar", "Resumos e questões", "Planejamento com IA"],
     items: [
@@ -169,6 +170,7 @@ const courses = [
     stage: "Corrigir erros",
     icon: AlertTriangle,
     title: "Erros que os Concurseiros Costumam Cometer",
+    demoVideoId: "MCOCwILz8wE",
     promise: "Reconheça comportamentos que atrasam a preparação e saiba corrigi-los.",
     lessons: ["Erros mais comuns", "Procrastinação", "Revisão insuficiente", "Disciplina e rotina"],
     items: [
@@ -183,6 +185,7 @@ const courses = [
     stage: "Decidir na prova",
     icon: Target,
     title: "Técnicas de Chute",
+    demoVideoId: "3Q25R8m1Jcw",
     promise: "Tome decisões mais criteriosas quando não souber uma resposta.",
     lessons: ["Mentalidade e estratégia", "Análise da questão", "Eliminação de alternativas", "Quando não chutar"],
     items: [
@@ -192,6 +195,11 @@ const courses = [
       "Combine pistas sem substituir o estudo do conteúdo",
     ],
   },
+];
+
+const testimonialVideos = [
+  { id: "sS2bS046uTk", label: "Depoimento 01" },
+  { id: "ZZpsUE9vAFE", label: "Depoimento 02" },
 ];
 
 type Course = (typeof courses)[number];
@@ -208,7 +216,66 @@ function ProfessorImage({ photo, className = "" }: { photo: string | null; class
   );
 }
 
-function CoursePlatformMockup({ course, photo }: { course: Course; photo: string | null }) {
+function YouTubePreview({
+  videoId,
+  title,
+  badge,
+  compact = false,
+}: {
+  videoId: string;
+  title: string;
+  badge?: string;
+  compact?: boolean;
+}) {
+  const [playing, setPlaying] = useState(false);
+
+  if (playing) {
+    return (
+      <div className="relative aspect-video w-full overflow-hidden bg-black">
+        <iframe
+          className="absolute inset-0 h-full w-full"
+          src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0`}
+          title={title}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+        />
+      </div>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={() => setPlaying(true)}
+      className="group relative block aspect-video w-full overflow-hidden bg-[#061121] text-left"
+      aria-label={`Assistir ${title}`}
+    >
+      <img
+        src={`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`}
+        alt=""
+        loading="lazy"
+        className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#020817] via-[#020817]/15 to-black/10" />
+      {badge && (
+        <span className="absolute left-3 top-3 rounded-full border border-primary/40 bg-black/70 px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-primary backdrop-blur">
+          {badge}
+        </span>
+      )}
+      <span className="absolute left-1/2 top-1/2 grid h-12 w-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-primary text-primary-foreground shadow-glow transition group-hover:scale-110 sm:h-14 sm:w-14">
+        <Play className="ml-1 h-5 w-5 fill-current sm:h-6 sm:w-6" />
+      </span>
+      {!compact && (
+        <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
+          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-primary">Clique para assistir</p>
+          <p className="mt-1 font-display text-base font-black text-white sm:text-lg">{title}</p>
+        </div>
+      )}
+    </button>
+  );
+}
+
+function CoursePlatformMockup({ course }: { course: Course }) {
   return (
     <div className="overflow-hidden rounded-2xl border border-primary/25 bg-[#040b16] shadow-2xl">
       <div className="flex items-center justify-between border-b border-white/10 bg-[#071427] px-4 py-3">
@@ -222,20 +289,18 @@ function CoursePlatformMockup({ course, photo }: { course: Course; photo: string
       </div>
 
       <div className="grid sm:grid-cols-[minmax(0,1fr)_155px]">
-        <div className="relative min-h-56 overflow-hidden bg-[#061121] sm:min-h-64">
-          <ProfessorImage photo={photo} className="absolute inset-0" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#020817] via-[#020817]/25 to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
+        <div className="bg-[#061121]">
+          <YouTubePreview
+            videoId={course.demoVideoId}
+            title={`Aula demonstrativa — ${course.title}`}
+            badge="Aula demonstrativa"
+            compact
+          />
+          <div className="border-t border-white/10 bg-[#050e1c] px-4 py-3">
             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">Aula em vídeo</p>
-            <h4 className="mt-1 max-w-xs font-display text-lg font-black text-white sm:text-xl">{course.title}</h4>
-            <div className="mt-3 flex items-center gap-3">
-              <span className="grid h-9 w-9 place-items-center rounded-full bg-primary text-primary-foreground shadow-glow">
-                <Play className="ml-0.5 h-4 w-4 fill-current" />
-              </span>
-              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/15">
-                <div className="h-full w-1/3 rounded-full bg-primary" />
-              </div>
-              <span className="text-[10px] text-white/70">12:36 / 28:41</span>
+            <div className="mt-1 flex items-center justify-between gap-3">
+              <h4 className="font-display text-base font-black text-white sm:text-lg">{course.title}</h4>
+              <span className="shrink-0 text-[9px] text-white/45">Demonstração real</span>
             </div>
           </div>
         </div>
@@ -348,12 +413,13 @@ function LandingPage() {
       <Hero photo={professorPhoto} />
       <ProblemSection />
       <JourneySection />
-      <CourseDetailsSection photo={professorPhoto} />
+      <CourseDetailsSection />
       <DeliverySection />
       <BenefitsSection />
       <ValueSection />
       <AudienceSection />
       <TeacherSection photo={professorPhoto} />
+      <TestimonialsSection />
       <OfferSection />
       <GuaranteeSection />
       <FAQSection />
@@ -489,18 +555,18 @@ function JourneySection() {
   );
 }
 
-function CourseDetailsSection({ photo }: { photo: string | null }) {
+function CourseDetailsSection() {
   return (
     <section className="mx-auto max-w-6xl px-6 py-20">
       <div className="mx-auto max-w-3xl text-center">
-        <span className="text-sm font-bold uppercase tracking-widest text-primary">O que você recebe</span>
-        <h2 className="mt-3 font-display text-3xl font-bold sm:text-4xl">Quatro <span className="text-primary">cursos online em vídeo</span> dentro da plataforma</h2>
-        <p className="mt-4 text-muted-foreground">Nada de aparência de e-book ou material solto: são cursos para assistir, avançar pelas aulas e estudar no seu ritmo.</p>
+        <span className="text-sm font-bold uppercase tracking-widest text-primary">Veja os cursos por dentro</span>
+        <h2 className="mt-3 font-display text-3xl font-bold sm:text-4xl">Assista a uma <span className="text-primary">aula demonstrativa real</span> de cada curso</h2>
+        <p className="mt-4 text-muted-foreground">Clique no player de cada curso para conhecer a didática antes de comprar. O vídeo só é carregado quando você decide assistir, deixando a página mais leve.</p>
       </div>
       <div className="mt-12 grid gap-7 lg:grid-cols-2">
         {courses.map((course) => (
           <article key={course.title} className="card-surface overflow-hidden p-4 transition hover:-translate-y-1 hover:border-primary/50 sm:p-5">
-            <CoursePlatformMockup course={course} photo={photo} />
+            <CoursePlatformMockup course={course} />
             <div className="px-2 pb-2 pt-6">
               <p className="text-xs font-bold uppercase tracking-widest text-primary">Curso {course.number} • R$47 separadamente</p>
               <h3 className="mt-1 font-display text-xl font-bold sm:text-2xl">{course.title}</h3>
@@ -644,6 +710,34 @@ function TeacherSection({ photo }: { photo: string | null }) {
   );
 }
 
+function TestimonialsSection() {
+  return (
+    <section className="mx-auto max-w-6xl px-6 py-20">
+      <div className="mx-auto max-w-3xl text-center">
+        <Quote className="mx-auto h-10 w-10 text-primary" />
+        <span className="mt-4 block text-sm font-bold uppercase tracking-widest text-primary">Depoimentos</span>
+        <h2 className="mt-3 font-display text-3xl font-bold sm:text-4xl">Veja experiências de quem já estudou com o <span className="text-primary">Prof. Lucas MPC</span></h2>
+        <p className="mt-4 text-muted-foreground">Começamos com estes relatos em vídeo e esta seção poderá receber novos depoimentos conforme você enviar.</p>
+      </div>
+
+      <div className="mt-12 grid gap-6 lg:grid-cols-2">
+        {testimonialVideos.map((testimonial) => (
+          <article key={testimonial.id} className="card-surface overflow-hidden p-4 sm:p-5">
+            <div className="overflow-hidden rounded-2xl border border-primary/20 bg-black">
+              <YouTubePreview videoId={testimonial.id} title={testimonial.label} badge="Depoimento em vídeo" />
+            </div>
+            <div className="px-2 pb-2 pt-5">
+              <p className="text-xs font-black uppercase tracking-widest text-primary">Relato real em vídeo</p>
+              <h3 className="mt-1 font-display text-xl font-bold">{testimonial.label}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">Clique no vídeo para assistir ao depoimento completo.</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function OfferSection() {
   return (
     <section id="oferta" className="mx-auto max-w-4xl px-6 py-20">
@@ -691,6 +785,7 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 function FAQSection() {
   const faqs = [
     { q: "São realmente quatro cursos online?", a: "Sim. A oferta reúne Como Passar em Concursos, Método IA para Concursos, Erros que os Concurseiros Costumam Cometer e Técnicas de Chute, todos apresentados como cursos online na plataforma." },
+    { q: "Posso assistir antes de comprar?", a: "Sim. A página disponibiliza uma aula demonstrativa de cada um dos quatro cursos para você conhecer a didática antes da compra." },
     { q: "O valor de R$27 é mensal?", a: "Não. É um pagamento único pelo combo, sem mensalidade." },
     { q: "Como recebo os cursos?", a: "O pagamento é processado pela Hotmart. Após a confirmação, você recebe as orientações para acessar os cursos na plataforma." },
     { q: "Posso assistir pelo celular?", a: "Sim. A plataforma pode ser acessada pelo navegador em celular ou computador, de acordo com a sua rotina." },
@@ -715,7 +810,7 @@ function FinalCTA() {
       <div className="relative mx-auto max-w-4xl px-6 py-24 text-center">
         <Sparkles className="mx-auto h-12 w-12 text-primary" />
         <h2 className="mt-6 font-display text-3xl font-black sm:text-5xl">Quatro cursos online de R$47. <span className="text-primary glow-text">Todos por R$27.</span></h2>
-        <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">Dê o próximo passo com uma preparação mais organizada, consciente e estratégica.</p>
+        <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">Você já pode assistir às aulas demonstrativas acima. Se a proposta fizer sentido para sua preparação, o combo reúne os quatro cursos em uma única compra.</p>
         <div className="mt-8"><CTAButton size="lg">Quero o Combo Estratégia da Aprovação</CTAButton></div>
         <p className="mt-4 text-xs text-muted-foreground">Pagamento único • Aulas em vídeo • Garantia de 7 dias</p>
       </div>
