@@ -200,6 +200,10 @@ const courses = [
 const testimonialVideos = [
   { id: "sS2bS046uTk", label: "Depoimento 01" },
   { id: "ZZpsUE9vAFE", label: "Depoimento 02" },
+  { id: "fE56EfppMe8", label: "Depoimento 03" },
+  { id: "UTjIZTanhWs", label: "Depoimento 04" },
+  { id: "zGbXMEXi1Sw", label: "Depoimento 05" },
+  { id: "QnfS0yuSEZQ", label: "Depoimento 06" },
 ];
 
 type Course = (typeof courses)[number];
@@ -717,10 +721,10 @@ function TestimonialsSection() {
         <Quote className="mx-auto h-10 w-10 text-primary" />
         <span className="mt-4 block text-sm font-bold uppercase tracking-widest text-primary">Depoimentos</span>
         <h2 className="mt-3 font-display text-3xl font-bold sm:text-4xl">Veja experiências de quem já estudou com o <span className="text-primary">Prof. Lucas MPC</span></h2>
-        <p className="mt-4 text-muted-foreground">Começamos com estes relatos em vídeo e esta seção poderá receber novos depoimentos conforme você enviar.</p>
+        <p className="mt-4 text-muted-foreground">Relatos em vídeo de alunos. Novos depoimentos podem ser acrescentados a esta seção.</p>
       </div>
 
-      <div className="mt-12 grid gap-6 lg:grid-cols-2">
+      <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {testimonialVideos.map((testimonial) => (
           <article key={testimonial.id} className="card-surface overflow-hidden p-4 sm:p-5">
             <div className="overflow-hidden rounded-2xl border border-primary/20 bg-black">
