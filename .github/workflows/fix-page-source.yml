@@ -1,0 +1,250 @@
+name: Fix page source
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: contains(github.event.head_commit.message, '[run-fix-page]')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Apply source fixes
+        shell: bash
+        run: |
+          python <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path('src/routes/index.tsx')
+          s = path.read_text(encoding='utf-8')
+
+          # VSL constant
+          if 'const HERO_VSL_URL' not in s:
+              s = s.replace(
+                  'const CHECKOUT_URL = "https://pay.hotmart.com/Q107598512K?checkoutMode=10";\n',
+                  'const CHECKOUT_URL = "https://pay.hotmart.com/Q107598512K?checkoutMode=10";\nconst HERO_VSL_URL = "/vsl-combo-estrategia-aprovacao.mp4";\n',
+                  1,
+              )
+
+          # 8 testimonials directly in the page source
+          testimonials = '''const testimonialVideos = [
+            { id: "sS2bS046uTk", label: "Depoimento 01" },
+            { id: "ZZpsUE9vAFE", label: "Depoimento 02" },
+            { id: "fE56EfppMe8", label: "Depoimento 03" },
+            { id: "UTjIZTanhWs", label: "Depoimento 04" },
+            { id: "zGbXMEXi1Sw", label: "Depoimento 05" },
+            { id: "QnfS0yuSEZQ", label: "Depoimento 06" },
+            { id: "he2WpV4G2oE", label: "Depoimento 07" },
+            { id: "OMtvBhXKNMo", label: "Depoimento 08" },
+          ];'''
+          s, count = re.subn(
+              r'const testimonialVideos = \[.*?\n\];',
+              testimonials,
+              s,
+              count=1,
+              flags=re.S,
+          )
+          if count != 1:
+              raise SystemExit('Não encontrei testimonialVideos')
+
+          # Dedicated testimonial player: real video frame, no branded cover
+          if 'function TestimonialVideo(' not in s:
+              marker = '\nfunction CoursePlatformMockup({ course }: { course: Course }) {'
+              component = r'''
+
+          function TestimonialVideo({ videoId, title }: { videoId: string; title: string }) {
+            const [playing, setPlaying] = useState(false);
+
+            if (playing) {
+              return (
+                <div className="relative aspect-video w-full overflow-hidden bg-black">
+                  <iframe
+                    className="absolute inset-0 h-full w-full"
+                    src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0`}
+                    title={title}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  />
+                </div>
+              );
+            }
+
+            return (
+              <button
+                type="button"
+                onClick={() => setPlaying(true)}
+                className="group relative block aspect-video w-full overflow-hidden bg-black text-left"
+                aria-label={`Assistir ${title}`}
+              >
+                <img
+                  src={`https://i.ytimg.com/vi/${videoId}/hq2.jpg`}
+                  alt={title}
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full object-cover object-center transition duration-300 group-hover:scale-[1.02]"
+                />
+                <div className="absolute inset-0 bg-black/5 transition group-hover:bg-transparent" />
+                <span className="absolute left-1/2 top-1/2 grid h-12 w-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-primary text-primary-foreground shadow-glow transition group-hover:scale-110 sm:h-14 sm:w-14">
+                  <Play className="ml-1 h-5 w-5 fill-current sm:h-6 sm:w-6" />
+                </span>
+              </button>
+            );
+          }
+          '''
+              if marker not in s:
+                  raise SystemExit('Não encontrei CoursePlatformMockup')
+              s = s.replace(marker, component + marker, 1)
+
+          # Replace photo mockup with the actual VSL in the intended hero card
+          start = s.find('function BundlePlatformMockup(')
+          end = s.find('\nfunction LandingPage()', start)
+          if start == -1 or end == -1:
+              raise SystemExit('Não encontrei BundlePlatformMockup')
+
+          bundle = r'''function BundlePlatformMockup() {
+            return (
+              <div className="relative rounded-[28px] border border-primary/30 bg-[#020817] p-3 shadow-2xl shadow-black/50 sm:p-4">
+                <div className="absolute -inset-10 -z-10 rounded-full bg-primary/10 blur-3xl" />
+                <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#050f20]">
+                  <div className="flex items-center justify-between border-b border-white/10 bg-[#071427] px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <div className="grid h-8 w-8 place-items-center rounded-lg bg-primary font-black text-primary-foreground">4</div>
+                      <div>
+                        <p className="text-xs font-black text-white">Combo Estratégia da Aprovação</p>
+                        <p className="text-[9px] uppercase tracking-widest text-primary">4 cursos online em vídeo</p>
+                      </div>
+                    </div>
+                    <div className="hidden items-center gap-3 text-white/50 sm:flex">
+                      <Monitor className="h-4 w-4" />
+                      <Smartphone className="h-4 w-4" />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 border-b border-white/10 p-3 sm:grid-cols-4">
+                    {courses.map((course) => (
+                      <div key={course.title} className="rounded-xl border border-white/10 bg-white/[0.035] p-2.5">
+                        <course.icon className="h-4 w-4 text-primary" />
+                        <p className="mt-2 text-[9px] font-bold leading-tight text-white/90">{course.title}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="grid md:grid-cols-[minmax(0,1fr)_180px]">
+                    <div className="relative min-h-[330px] overflow-hidden bg-black sm:min-h-[390px]">
+                      <video
+                        className="absolute inset-0 h-full w-full bg-black object-contain"
+                        controls
+                        playsInline
+                        preload="metadata"
+                        aria-label="VSL do Combo Estratégia da Aprovação"
+                      >
+                        <source src={HERO_VSL_URL} type="video/mp4" />
+                        Seu navegador não suporta reprodução de vídeo.
+                      </video>
+                      <div className="pointer-events-none absolute left-4 top-4 rounded-full border border-primary/30 bg-black/65 px-3 py-1 text-[10px] font-bold text-primary backdrop-blur">
+                        VSL oficial do combo
+                      </div>
+                    </div>
+
+                    <div className="hidden border-l border-white/10 bg-[#071427] p-4 md:block">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-white/50">Sua jornada</p>
+                      <div className="mt-4 space-y-3">
+                        {courses.map((course, index) => (
+                          <div key={course.stage} className="flex gap-2.5">
+                            <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-primary/15 text-[10px] font-black text-primary">{index + 1}</span>
+                            <div>
+                              <p className="text-[10px] font-bold text-white">{course.stage}</p>
+                              <p className="mt-0.5 text-[9px] leading-snug text-white/45">{course.title}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="mt-5 rounded-xl border border-primary/25 bg-primary/10 p-3">
+                        <p className="text-[10px] font-black uppercase tracking-wide text-primary">Acesso pela plataforma</p>
+                        <p className="mt-1 text-[9px] leading-relaxed text-white/60">Assista no computador ou celular após a confirmação do pagamento.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          }
+          '''
+          s = s[:start] + bundle + s[end:]
+
+          # Hero no longer receives/uses the professor photo
+          s = s.replace('<Hero photo={professorPhoto} />', '<Hero />', 1)
+          s = s.replace('function Hero({ photo }: { photo: string | null }) {', 'function Hero() {', 1)
+          s = s.replace('<BundlePlatformMockup photo={photo} />', '<BundlePlatformMockup />', 1)
+
+          # Testimonials use the real frame player directly
+          s = s.replace(
+              '<YouTubePreview videoId={testimonial.id} title={testimonial.label} badge="Depoimento em vídeo" />',
+              '<TestimonialVideo videoId={testimonial.id} title={testimonial.label} />',
+              1,
+          )
+          s = s.replace(
+              'Relatos em vídeo de alunos. Novos depoimentos podem ser acrescentados a esta seção.',
+              'Relatos em vídeo de alunos, com o frame real de cada vídeo antes da reprodução.',
+              1,
+          )
+
+          path.write_text(s, encoding='utf-8')
+          PY
+
+          # Remove the previous DOM-manipulation workaround from the root route.
+          git show 674ad70496f2edab8f069a28e372d839fff5601d:src/routes/__root.tsx > src/routes/__root.tsx
+
+          # TanStack Start >= 1.132 on Netlify publishes the client directory.
+          cat > netlify.toml <<'EOF'
+          [build]
+          command = "npm run build"
+          publish = "dist/client"
+          EOF
+
+      - name: Validate source expectations
+        shell: bash
+        run: |
+          grep -q 'he2WpV4G2oE' src/routes/index.tsx
+          grep -q 'OMtvBhXKNMo' src/routes/index.tsx
+          grep -q 'HERO_VSL_URL' src/routes/index.tsx
+          grep -q '<BundlePlatformMockup />' src/routes/index.tsx
+          ! grep -q 'TestimonialsEnhancement' src/routes/__root.tsx
+          ! grep -q 'VslEnhancement' src/routes/__root.tsx
+          grep -q 'publish = "dist/client"' netlify.toml
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build production bundle
+        run: bun run build
+
+      - name: Validate built output
+        shell: bash
+        run: |
+          test -d dist/client
+          test -f dist/client/vsl-combo-estrategia-aprovacao.mp4
+          grep -R -q 'he2WpV4G2oE' dist/client || true
+          grep -R -q 'vsl-combo-estrategia-aprovacao.mp4' dist/client || true
+
+      - name: Commit corrected source
+        shell: bash
+        run: |
+          git config user.name "Prof. Lucas MPC Automation"
+          git config user.email "matematecnica@gmail.com"
+          git add src/routes/index.tsx src/routes/__root.tsx netlify.toml
+          git commit -m "Corrige VSL e depoimentos na fonte da pagina"
+          git push origin main
