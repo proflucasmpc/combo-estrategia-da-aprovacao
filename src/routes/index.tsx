@@ -27,6 +27,7 @@ import {
 import { SiteFooter } from "../components/SiteFooter";
 
 const CHECKOUT_URL = "https://pay.hotmart.com/Q107598512K?checkoutMode=10";
+const HERO_VSL_URL = "/vsl-combo-estrategia-aprovacao.mp4";
 const PROFESSOR_PHOTO_SOURCE_URL =
   "https://raw.githubusercontent.com/proflucasmpc/turma-coletiva-academia-matematica/main/index.html";
 const TRACKING_PARAMETERS = [
@@ -204,6 +205,8 @@ const testimonialVideos = [
   { id: "UTjIZTanhWs", label: "Depoimento 04" },
   { id: "zGbXMEXi1Sw", label: "Depoimento 05" },
   { id: "QnfS0yuSEZQ", label: "Depoimento 06" },
+  { id: "he2WpV4G2oE", label: "Depoimento 07" },
+  { id: "OMtvBhXKNMo", label: "Depoimento 08" },
 ];
 
 type Course = (typeof courses)[number];
@@ -279,6 +282,45 @@ function YouTubePreview({
   );
 }
 
+
+function TestimonialVideo({ videoId, title }: { videoId: string; title: string }) {
+  const [playing, setPlaying] = useState(false);
+
+  if (playing) {
+    return (
+      <div className="relative aspect-video w-full overflow-hidden bg-black">
+        <iframe
+          className="absolute inset-0 h-full w-full"
+          src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0`}
+          title={title}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+        />
+      </div>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={() => setPlaying(true)}
+      className="group relative block aspect-video w-full overflow-hidden bg-black text-left"
+      aria-label={`Assistir ${title}`}
+    >
+      <img
+        src={`https://i.ytimg.com/vi/${videoId}/hq2.jpg`}
+        alt={title}
+        loading="lazy"
+        className="absolute inset-0 h-full w-full object-cover object-center transition duration-300 group-hover:scale-[1.02]"
+      />
+      <div className="absolute inset-0 bg-black/5 transition group-hover:bg-transparent" />
+      <span className="absolute left-1/2 top-1/2 grid h-12 w-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-primary text-primary-foreground shadow-glow transition group-hover:scale-110 sm:h-14 sm:w-14">
+        <Play className="ml-1 h-5 w-5 fill-current sm:h-6 sm:w-6" />
+      </span>
+    </button>
+  );
+}
+
 function CoursePlatformMockup({ course }: { course: Course }) {
   return (
     <div className="overflow-hidden rounded-2xl border border-primary/25 bg-[#040b16] shadow-2xl">
@@ -335,7 +377,7 @@ function CoursePlatformMockup({ course }: { course: Course }) {
   );
 }
 
-function BundlePlatformMockup({ photo }: { photo: string | null }) {
+function BundlePlatformMockup() {
   return (
     <div className="relative rounded-[28px] border border-primary/30 bg-[#020817] p-3 shadow-2xl shadow-black/50 sm:p-4">
       <div className="absolute -inset-10 -z-10 rounded-full bg-primary/10 blur-3xl" />
@@ -364,24 +406,19 @@ function BundlePlatformMockup({ photo }: { photo: string | null }) {
         </div>
 
         <div className="grid md:grid-cols-[minmax(0,1fr)_180px]">
-          <div className="relative min-h-[330px] overflow-hidden bg-[#061121] sm:min-h-[390px]">
-            <ProfessorImage photo={photo} className="absolute inset-0" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#020817] via-transparent to-[#020817]/20" />
-            <div className="absolute left-4 top-4 rounded-full border border-primary/30 bg-black/45 px-3 py-1 text-[10px] font-bold text-primary backdrop-blur">
-              Prof. Lucas MPC • Aula online
-            </div>
-            <div className="absolute inset-x-0 bottom-0 p-5">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">Conhecimento + estratégia</p>
-              <p className="mt-1 max-w-md font-display text-2xl font-black text-white sm:text-3xl">Uma preparação mais completa, do estudo à prova.</p>
-              <div className="mt-4 flex items-center gap-3">
-                <span className="grid h-11 w-11 place-items-center rounded-full bg-primary text-primary-foreground shadow-glow">
-                  <Play className="ml-0.5 h-5 w-5 fill-current" />
-                </span>
-                <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/15">
-                  <div className="h-full w-[42%] rounded-full bg-primary" />
-                </div>
-                <span className="text-[10px] text-white/70">Aula em vídeo</span>
-              </div>
+          <div className="relative min-h-[330px] overflow-hidden bg-black sm:min-h-[390px]">
+            <video
+              className="absolute inset-0 h-full w-full bg-black object-contain"
+              controls
+              playsInline
+              preload="metadata"
+              aria-label="VSL do Combo Estratégia da Aprovação"
+            >
+              <source src={HERO_VSL_URL} type="video/mp4" />
+              Seu navegador não suporta reprodução de vídeo.
+            </video>
+            <div className="pointer-events-none absolute left-4 top-4 rounded-full border border-primary/30 bg-black/65 px-3 py-1 text-[10px] font-bold text-primary backdrop-blur">
+              VSL oficial do combo
             </div>
           </div>
 
@@ -414,7 +451,7 @@ function LandingPage() {
   return (
     <div className="min-h-screen">
       <Navbar />
-      <Hero photo={professorPhoto} />
+      <Hero />
       <ProblemSection />
       <JourneySection />
       <CourseDetailsSection />
@@ -451,7 +488,7 @@ function Navbar() {
   );
 }
 
-function Hero({ photo }: { photo: string | null }) {
+function Hero() {
   return (
     <section className="relative overflow-hidden">
       <div className="absolute inset-0 grid-bg opacity-40" />
@@ -501,7 +538,7 @@ function Hero({ photo }: { photo: string | null }) {
           </div>
         </div>
 
-        <BundlePlatformMockup photo={photo} />
+        <BundlePlatformMockup />
       </div>
     </section>
   );
@@ -721,14 +758,14 @@ function TestimonialsSection() {
         <Quote className="mx-auto h-10 w-10 text-primary" />
         <span className="mt-4 block text-sm font-bold uppercase tracking-widest text-primary">Depoimentos</span>
         <h2 className="mt-3 font-display text-3xl font-bold sm:text-4xl">Veja experiências de quem já estudou com o <span className="text-primary">Prof. Lucas MPC</span></h2>
-        <p className="mt-4 text-muted-foreground">Relatos em vídeo de alunos. Novos depoimentos podem ser acrescentados a esta seção.</p>
+        <p className="mt-4 text-muted-foreground">Relatos em vídeo de alunos, com o frame real de cada vídeo antes da reprodução.</p>
       </div>
 
       <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {testimonialVideos.map((testimonial) => (
           <article key={testimonial.id} className="card-surface overflow-hidden p-4 sm:p-5">
             <div className="overflow-hidden rounded-2xl border border-primary/20 bg-black">
-              <YouTubePreview videoId={testimonial.id} title={testimonial.label} badge="Depoimento em vídeo" />
+              <TestimonialVideo videoId={testimonial.id} title={testimonial.label} />
             </div>
             <div className="px-2 pb-2 pt-5">
               <p className="text-xs font-black uppercase tracking-widest text-primary">Relato real em vídeo</p>
