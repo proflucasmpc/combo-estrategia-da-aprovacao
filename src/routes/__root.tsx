@@ -17,20 +17,10 @@ function NotFoundComponent() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold text-foreground">404</h1>
-
-        <h2 className="mt-4 text-xl font-semibold text-foreground">
-          Página não encontrada
-        </h2>
-
-        <p className="mt-2 text-sm text-muted-foreground">
-          A página que você procura não existe ou foi movida.
-        </p>
-
+        <h2 className="mt-4 text-xl font-semibold text-foreground">Página não encontrada</h2>
+        <p className="mt-2 text-sm text-muted-foreground">A página que você procura não existe ou foi movida.</p>
         <div className="mt-6">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90"
-          >
+          <Link to="/" className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90">
             Voltar ao início
           </Link>
         </div>
@@ -39,28 +29,15 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({
-  error,
-  reset,
-}: {
-  error: Error;
-  reset: () => void;
-}) {
+function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
-
   const router = useRouter();
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          Esta página não carregou
-        </h1>
-
-        <p className="mt-2 text-sm text-muted-foreground">
-          Algo deu errado. Você pode tentar novamente ou voltar ao início.
-        </p>
-
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">Esta página não carregou</h1>
+        <p className="mt-2 text-sm text-muted-foreground">Algo deu errado. Você pode tentar novamente ou voltar ao início.</p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
             type="button"
@@ -72,11 +49,7 @@ function ErrorComponent({
           >
             Tentar novamente
           </button>
-
-          <a
-            href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
-          >
+          <a href="/" className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted">
             Início
           </a>
         </div>
@@ -85,85 +58,41 @@ function ErrorComponent({
   );
 }
 
-export const Route = createRootRouteWithContext<{
-  queryClient: QueryClient;
-}>()({
+export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
     meta: [
-      {
-        charSet: "utf-8",
-      },
-      {
-        name: "viewport",
-        content: "width=device-width, initial-scale=1",
-      },
-      {
-        title:
-          "Combo Estratégia da Aprovação — 4 em 1 | Prof. Lucas MPC",
-      },
+      { charSet: "utf-8" },
+      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { title: "Combo Estratégia da Aprovação — 4 em 1 | Prof. Lucas MPC" },
       {
         name: "description",
-        content:
-          "Quatro cursos para organizar os estudos, usar inteligência artificial, evitar erros e tomar decisões melhores na prova. De R$188 por R$27.",
+        content: "Quatro cursos para organizar os estudos, usar inteligência artificial, evitar erros e tomar decisões melhores na prova. De R$188 por R$27.",
       },
-      {
-        property: "og:title",
-        content:
-          "Combo Estratégia da Aprovação — 4 em 1 | Prof. Lucas MPC",
-      },
+      { property: "og:title", content: "Combo Estratégia da Aprovação — 4 em 1 | Prof. Lucas MPC" },
       {
         property: "og:description",
-        content:
-          "Quatro cursos para organizar os estudos, usar inteligência artificial, evitar erros e tomar decisões melhores na prova. De R$188 por R$27.",
+        content: "Quatro cursos para organizar os estudos, usar inteligência artificial, evitar erros e tomar decisões melhores na prova. De R$188 por R$27.",
       },
-      {
-        property: "og:type",
-        content: "website",
-      },
-      {
-        property: "og:site_name",
-        content: "Combo Estratégia da Aprovação",
-      },
-      {
-        name: "twitter:card",
-        content: "summary_large_image",
-      },
-      {
-        name: "twitter:title",
-        content:
-          "Combo Estratégia da Aprovação — 4 em 1 | Prof. Lucas MPC",
-      },
+      { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "Combo Estratégia da Aprovação" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Combo Estratégia da Aprovação — 4 em 1 | Prof. Lucas MPC" },
       {
         name: "twitter:description",
-        content:
-          "Quatro cursos para organizar os estudos, usar inteligência artificial, evitar erros e tomar decisões melhores na prova. De R$188 por R$27.",
+        content: "Quatro cursos para organizar os estudos, usar inteligência artificial, evitar erros e tomar decisões melhores na prova. De R$188 por R$27.",
       },
-      {
-        name: "theme-color",
-        content: "#0b1220",
-      },
+      { name: "theme-color", content: "#0b1220" },
     ],
     links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
-      {
-        rel: "preconnect",
-        href: "https://fonts.googleapis.com",
-      },
-      {
-        rel: "preconnect",
-        href: "https://fonts.gstatic.com",
-        crossOrigin: "anonymous",
-      },
+      { rel: "stylesheet", href: appCss },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700;800&display=swap",
       },
     ],
   }),
-
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
@@ -176,7 +105,6 @@ function RootShell({ children }: { children: ReactNode }) {
       <head>
         <HeadContent />
       </head>
-
       <body>
         {children}
         <Scripts />
@@ -196,15 +124,60 @@ const testimonialVideos = [
   { id: "OMtvBhXKNMo", label: "Depoimento 08" },
 ];
 
+function HeroVslEnhancement() {
+  useEffect(() => {
+    let observer: MutationObserver | null = null;
+
+    const setup = () => {
+      const badge = Array.from(document.querySelectorAll("div")).find(
+        (element) => element.textContent?.trim() === "Prof. Lucas MPC • Aula online",
+      ) as HTMLElement | undefined;
+
+      const container = badge?.parentElement as HTMLElement | null;
+      if (!container) return false;
+      if (container.dataset.vslEnhanced === "true") return true;
+
+      container.dataset.vslEnhanced = "true";
+      container.className = "relative min-h-[330px] overflow-hidden bg-black sm:min-h-[390px]";
+      container.innerHTML = `
+        <video
+          class="absolute inset-0 h-full w-full bg-black object-contain"
+          controls
+          playsinline
+          preload="metadata"
+          aria-label="VSL do Combo Estratégia da Aprovação"
+        >
+          <source src="/vsl-combo-estrategia-aprovacao.mp4" type="video/mp4" />
+          Seu navegador não suporta reprodução de vídeo.
+        </video>
+        <div class="pointer-events-none absolute left-4 top-4 rounded-full border border-primary/30 bg-black/65 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-primary backdrop-blur">
+          VSL oficial do combo
+        </div>
+      `;
+      return true;
+    };
+
+    if (!setup()) {
+      observer = new MutationObserver(() => {
+        if (setup()) {
+          observer?.disconnect();
+          observer = null;
+        }
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+    }
+
+    return () => observer?.disconnect();
+  }, []);
+
+  return null;
+}
+
 function TestimonialsEnhancement() {
   useEffect(() => {
     let observer: MutationObserver | null = null;
 
-    const activatePreview = (
-      preview: HTMLElement,
-      videoId: string,
-      label: string,
-    ) => {
+    const activatePreview = (preview: HTMLElement, videoId: string, label: string) => {
       preview.innerHTML = `
         <button type="button" aria-label="Assistir ${label}" class="group relative block aspect-video w-full overflow-hidden bg-[#061121] text-left">
           <img src="https://i.ytimg.com/vi/${videoId}/hq2.jpg" alt="${label}" loading="lazy" class="absolute inset-0 h-full w-full object-cover object-center transition duration-300 group-hover:scale-[1.02]" />
@@ -239,9 +212,7 @@ function TestimonialsEnhancement() {
       if (!section) return false;
 
       const grid = Array.from(section.querySelectorAll("div")).find(
-        (element) =>
-          element.className.includes("grid") &&
-          element.querySelector(":scope > article"),
+        (element) => element.className.includes("grid") && element.querySelector(":scope > article"),
       ) as HTMLElement | undefined;
       if (!grid) return false;
 
@@ -249,9 +220,7 @@ function TestimonialsEnhancement() {
         grid.className = "mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3";
       }
 
-      const articles = Array.from(
-        grid.querySelectorAll(":scope > article"),
-      ) as HTMLElement[];
+      const articles = Array.from(grid.querySelectorAll(":scope > article")) as HTMLElement[];
 
       testimonialVideos.forEach((testimonial, index) => {
         let article = articles[index];
@@ -306,6 +275,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
+      <HeroVslEnhancement />
       <TestimonialsEnhancement />
       <CookieBanner />
     </QueryClientProvider>
