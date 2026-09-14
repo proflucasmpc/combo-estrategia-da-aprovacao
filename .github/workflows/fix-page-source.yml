@@ -32,7 +32,6 @@ jobs:
           path = Path('src/routes/index.tsx')
           s = path.read_text(encoding='utf-8')
 
-          # VSL constant
           if 'const HERO_VSL_URL' not in s:
               s = s.replace(
                   'const CHECKOUT_URL = "https://pay.hotmart.com/Q107598512K?checkoutMode=10";\n',
@@ -40,7 +39,6 @@ jobs:
                   1,
               )
 
-          # 8 testimonials directly in the page source
           testimonials = '''const testimonialVideos = [
             { id: "sS2bS046uTk", label: "Depoimento 01" },
             { id: "ZZpsUE9vAFE", label: "Depoimento 02" },
@@ -61,7 +59,6 @@ jobs:
           if count != 1:
               raise SystemExit('Não encontrei testimonialVideos')
 
-          # Dedicated testimonial player: real video frame, no branded cover
           if 'function TestimonialVideo(' not in s:
               marker = '\nfunction CoursePlatformMockup({ course }: { course: Course }) {'
               component = r'''
@@ -108,7 +105,6 @@ jobs:
                   raise SystemExit('Não encontrei CoursePlatformMockup')
               s = s.replace(marker, component + marker, 1)
 
-          # Replace photo mockup with the actual VSL in the intended hero card
           start = s.find('function BundlePlatformMockup(')
           end = s.find('\nfunction LandingPage()', start)
           if start == -1 or end == -1:
@@ -185,12 +181,10 @@ jobs:
           '''
           s = s[:start] + bundle + s[end:]
 
-          # Hero no longer receives/uses the professor photo
           s = s.replace('<Hero photo={professorPhoto} />', '<Hero />', 1)
           s = s.replace('function Hero({ photo }: { photo: string | null }) {', 'function Hero() {', 1)
           s = s.replace('<BundlePlatformMockup photo={photo} />', '<BundlePlatformMockup />', 1)
 
-          # Testimonials use the real frame player directly
           s = s.replace(
               '<YouTubePreview videoId={testimonial.id} title={testimonial.label} badge="Depoimento em vídeo" />',
               '<TestimonialVideo videoId={testimonial.id} title={testimonial.label} />',
@@ -205,14 +199,12 @@ jobs:
           path.write_text(s, encoding='utf-8')
           PY
 
-          # Remove the previous DOM-manipulation workaround from the root route.
           git show 674ad70496f2edab8f069a28e372d839fff5601d:src/routes/__root.tsx > src/routes/__root.tsx
 
-          # TanStack Start >= 1.132 on Netlify publishes the client directory.
           cat > netlify.toml <<'EOF'
           [build]
           command = "npm run build"
-          publish = "dist/client"
+          publish = "dist"
           EOF
 
       - name: Validate source expectations
@@ -222,9 +214,10 @@ jobs:
           grep -q 'OMtvBhXKNMo' src/routes/index.tsx
           grep -q 'HERO_VSL_URL' src/routes/index.tsx
           grep -q '<BundlePlatformMockup />' src/routes/index.tsx
+          grep -q 'TestimonialVideo' src/routes/index.tsx
           ! grep -q 'TestimonialsEnhancement' src/routes/__root.tsx
           ! grep -q 'VslEnhancement' src/routes/__root.tsx
-          grep -q 'publish = "dist/client"' netlify.toml
+          grep -q 'publish = "dist"' netlify.toml
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
@@ -235,10 +228,11 @@ jobs:
       - name: Validate built output
         shell: bash
         run: |
-          test -d dist/client
-          test -f dist/client/vsl-combo-estrategia-aprovacao.mp4
-          grep -R -q 'he2WpV4G2oE' dist/client || true
-          grep -R -q 'vsl-combo-estrategia-aprovacao.mp4' dist/client || true
+          test -d dist
+          test -f dist/vsl-combo-estrategia-aprovacao.mp4
+          grep -R -q 'he2WpV4G2oE' dist/assets
+          grep -R -q 'OMtvBhXKNMo' dist/assets
+          grep -R -q 'vsl-combo-estrategia-aprovacao.mp4' dist/assets
 
       - name: Commit corrected source
         shell: bash
